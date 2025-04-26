@@ -1,4 +1,6 @@
-package supervisor
+package models
+
+type ConfigType int
 
 const (
 	STR ConfigType = iota
