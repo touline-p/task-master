@@ -1,30 +1,26 @@
 package sanitizer
 
 import (
-	"errors"
-
 	"github.com/touline-p/task-master/cli/domain"
 	"github.com/touline-p/task-master/core/error_msg"
 )
 
-type SimpleSanitizer struct {}
+type SimpleSanitizer struct{}
 
 type SanitizedCommand struct {
 	command domain.CommandCode
-	jobs []domain.Job
+	jobs    []domain.Job
 }
 
-
-func (c *SanitizedCommand) Command() domain.CommandCode { return c.command }
-func (c *SanitizedCommand) JobNames() []domain.Job { return c.jobs }
-
-
-func (self *SimpleSanitizer)Run(parsedComand domain.IParsedCommand) (domain.ISanitizedCommand, error) {
+func (self *SimpleSanitizer) Run(parsedComand domain.IParsedCommand) (domain.ISanitizedCommand, domain.IResponse) {
 	command := ValidateCommand(parsedComand.Command())
+	resp_builder := domain.NewResponseBuilder()
+
 	if command == CmdInvalid {
-		return nil, errors.New(error_msg.BAD_COMMAND)
+		resp_builder.Error("command: " + parsedComand.Command() + " " + error_msg.BAD_COMMAND)
+		return nil, resp_builder.Build()
 	}
-	jobs := getJobStatus
+	return nil, resp_builder.Build()
 }
 
 const (
@@ -51,7 +47,7 @@ const (
 	Fatal
 )
 
-var CommandSymbols = [CmdNumber]string {
+var CommandSymbols = [CmdNumber]string{
 	"",
 	"exit",
 	"pid",

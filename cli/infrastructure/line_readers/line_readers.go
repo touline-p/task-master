@@ -4,20 +4,24 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/touline-p/task-master/cli/domain"
 )
 
-type CliReader struct {}
+type CliReader struct{}
 
-func (clrdr *CliReader)Run() (string, error) {
+func (clrdr *CliReader) Run() (string, domain.IResponse) {
 	fmt.Print("Enter a line: ")
 	reader := bufio.NewReader(os.Stdin)
-	return reader.ReadString('\n')
+	line, _ := reader.ReadString('\n')
+	return line, nil
 }
 
-type SocketReader struct {}
+type SocketReader struct{}
 
-func (clrdr *SocketReader)Run() (string, error) {
+func (clrdr *SocketReader) Run() (string, domain.IResponse) {
 	fmt.Print("This is falsly a socket reader: ")
 	reader := bufio.NewReader(os.Stdin)
-	return reader.ReadString('\n')
+	line, _ := reader.ReadString('\n')
+	return line, nil
 }

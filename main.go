@@ -1,6 +1,6 @@
 package main
 
-import use_case "github.com/touline-p/task-master/cli/applications/use_case" 
+import use_case "github.com/touline-p/task-master/cli/applications/use_case"
 
 func main() {
 	use_case.Run()
@@ -18,7 +18,7 @@ Run() {
 domain:
 	cli:
 		dependency_injection.go
-		domaine: 
+		domaine:
 			typage Entite et value object
 			interface des services
 			const (
@@ -33,20 +33,20 @@ domain:
 				CmdStatus
 			)
 
-			
-		applications: 
+
+		applications:
 			use_case -> IParser
 			parsing
 			terminalReader
 			networkReader
 
 		infrastructure: (ReadLine) depend de ce qui est utilise techniquement
-			read, recv	
+			read, recv
 
 			repository:
 				permet d'aller chercher les donnees
-				l'interaction avec le stockage/retrieve data 
-			
+				l'interaction avec le stockage/retrieve data
+
 		presentation:
 			comment interagire avec le context
 

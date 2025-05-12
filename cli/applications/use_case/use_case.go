@@ -1,16 +1,20 @@
 package use_case
 
 import (
-	"fmt"
 	"github.com/touline-p/task-master/cli"
 )
 
-func Run ()  {
-	fmt.Println("bonjour")
+func Run() {
 	controler := cli.GetControlerCli()
-	line, _ := controler.LineGetter().Run(controler.Readers())
-	parsedCommand, _ := controler.Parser().Run(line)
-	sanitizedCommand, _ := controler.Sanitizer().Run(parsedCommand)
-	response, _ := controler.Launcher().Run(sanitizedCommand)
-	println(response.Format())
+	linegetter := controler.LineGetter()
+	parser := controler.Parser()
+	sanitizer := controler.Sanitizer()
+	launcher := controler.Launcher()
+	for {
+		line, response := linegetter.Run(controler.Readers())
+		parsedCommand, response := parser.Run(&line)
+		sanitizedCommand, response := sanitizer.Run(parsedCommand)
+		response = launcher.Run(sanitizedCommand)
+		println(response.Format())
+	}
 }
