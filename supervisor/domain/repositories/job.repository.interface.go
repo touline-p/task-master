@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	models "github.com/touline-p/task-master/supervisor/domain/models"
+	"github.com/touline-p/task-master/supervisor/domain/models"
 )
 
 type IJobRepository interface {
