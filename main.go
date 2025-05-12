@@ -1,9 +1,13 @@
 package main
 
-import use_case "github.com/touline-p/task-master/cli/applications/use_case"
+import (
+	"github.com/touline-p/task-master/supervisor/application"
+	// use_case "github.com/touline-p/task-master/cli/applications/use_case"
+)
 
 func main() {
-	use_case.Run()
+	// use_case.Run()
+	application.StartUpSupervisor()
 }
 
 /*
