@@ -54,6 +54,6 @@ func (c *ProcessEventCommand) Type() string {
 	return "PROCESS_EVENT"
 }
 
-type CommandHandler interface {
+type ICommandHandler interface {
 	Handle(command Command) error
 }

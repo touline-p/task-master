@@ -4,46 +4,39 @@ import (
 	// TODO : Debug, a enlever
 	"os"
 
+	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
+	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	"github.com/touline-p/task-master/supervisor/domain/models"
 )
 
 func StartUpSupervisor() error {
-	sup := services.SupervisorService{}
-	retErr := sup.Start()
-	if retErr != nil {
-		return retErr
-	}
-
-	sch := services.SchedulerService{}
-	retErr = sch.Initialize()
-	if retErr != nil {
-		return retErr
-	}
+	controller := supervisor.GetSupervisorController()
 
 	jobs := make([]models.Job, 0, 1)
 	newJob := createDummyJob()
 	jobs = append(jobs, newJob)
-	retErr = sch.RegisterJobs(jobs)
-	if retErr != nil {
-		return retErr
+
+	err := controller.Scheduler().RegisterJobs(jobs)
+	if err != nil {
+		return err
 	}
 
-	jobs, retErr = sch.FindAllJobs()
-	if retErr != nil {
-		return retErr
+	jobs, err = controller.Repository().FindAll()
+	if err != nil {
+		return err
 	}
 
-	errors := make([]error, 0, 1)
+	var errors []error
 	for _, j := range jobs {
-		err := sch.LaunchJob(j.Id)
-		if err != nil {
+		startCmd := &cqrs.StartJobCommand{JobId: j.Id}
+		if err := controller.CommandHandler().Handle(startCmd); err != nil {
 			errors = append(errors, err)
 		}
 	}
-	// TODO : Concatenate errors
-	if len(errors) != 0 {
-		return errors[1]
+
+	if len(errors) > 0 {
+		return services.ConcatenateErrors(errors)
 	}
 
 	return nil

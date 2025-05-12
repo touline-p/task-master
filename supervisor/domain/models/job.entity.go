@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 	"slices"
 	"time"
@@ -46,10 +47,12 @@ type Job struct {
 }
 
 func NewJob(id JobId, config JobConfig) *Job {
+	fmt.Printf("NewJob %s, config : %+v\n", id, config)
+
 	return &Job{
 		Id:           id,
 		Config:       config,
-		StateMachine: NewStateMachine(),
+		StateMachine: NewStateMachine(id),
 		RetryCount:   0,
 		StopAttempts: 0,
 	}

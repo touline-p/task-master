@@ -36,6 +36,6 @@ func (q *CheckJobHealthQuery) Type() string {
 	return "CHECK_JOB_HEALTH"
 }
 
-type QueryHandler interface {
+type IQueryHandler interface {
 	Handle(query Query) (any, error)
 }

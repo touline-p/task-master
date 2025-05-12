@@ -1,4 +1,4 @@
-package interfaces
+package services
 
 import (
 	"github.com/touline-p/task-master/supervisor/domain/models"

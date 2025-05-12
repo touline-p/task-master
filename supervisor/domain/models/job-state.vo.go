@@ -1,6 +1,9 @@
 package models
 
-import "slices"
+import (
+	"fmt"
+	"slices"
+)
 
 type JobStatus string
 
@@ -22,6 +25,7 @@ type JobState struct {
 }
 
 type StateMachine struct {
+	JobID   string
 	Current *JobState
 }
 
@@ -46,8 +50,9 @@ var allowedTransitions = map[JobStatus][]JobStatus{
 	StatusFatal:    {StatusInitial},
 }
 
-func NewStateMachine() *StateMachine {
+func NewStateMachine(jobID JobId) *StateMachine {
 	return &StateMachine{
+		JobID: string(jobID),
 		Current: &JobState{
 			Status:      StatusInitial,
 			Description: "Job initialized",
@@ -72,11 +77,22 @@ func (sm *StateMachine) Transition(to JobStatus, exitCode int, description strin
 		}
 	}
 
+	fromStatus := sm.Current.Status
+
 	sm.Current = &JobState{
 		Status:      to,
 		ExitCode:    exitCode,
 		Description: description,
 	}
+
+	// TODO : remove when logger implemented
+	fmt.Printf("Job [%s] : %s → %s - %s (Exit code: %d)\n",
+		sm.JobID,
+		fromStatus,
+		to,
+		description,
+		exitCode,
+	)
 
 	return nil
 }
