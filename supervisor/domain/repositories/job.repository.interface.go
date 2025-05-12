@@ -5,11 +5,10 @@ import (
 )
 
 type IJobRepository interface {
-	// jobsMap() map[models.JobId]models.Job
 	Save(job *models.Job) error
 	FindById(id models.JobId) (models.Job, error)
 	FindAll() ([]models.Job, error)
-	// FindByStatus(status models.JobStatus) ([]models.Job, error)
-	// Delete(id models.JobId) error
-	// Exists(id models.JobId) bool
+	FindByStatus(status models.JobStatus) ([]models.Job, error)
+	Delete(id models.JobId) error
+	Exists(id models.JobId) bool
 }
