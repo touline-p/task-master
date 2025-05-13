@@ -2,12 +2,16 @@ package main
 
 import (
 	"github.com/touline-p/task-master/supervisor/application"
-	// use_case "github.com/touline-p/task-master/cli/applications/use_case"
+	"github.com/touline-p/task-master/dependency_injection"
 )
 
 func main() {
-	// use_case.Run()
+	var controler dependency_injection.IControler
 	application.StartUpSupervisor()
+
+	controler = dependency_injection.GetSimpleControler()
+	cli_controler := controler.CliEntryPoint()
+	cli_controler.Run()
 }
 
 /*
