@@ -4,7 +4,7 @@ import (
 	"github.com/touline-p/task-master/cli/applications/launcher"
 	"github.com/touline-p/task-master/cli/applications/line_getter"
 	"github.com/touline-p/task-master/cli/applications/parser"
-	"github.com/touline-p/task-master/cli/applications/use_case"
+	"github.com/touline-p/task-master/cli/applications/entrypoint"
 	"github.com/touline-p/task-master/cli/applications/sanitizer"
 	cli_interfaces "github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/infrastructure/line_readers"
