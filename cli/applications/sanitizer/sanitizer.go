@@ -1,6 +1,7 @@
 package sanitizer
 
 import (
+	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/domain"
 	"github.com/touline-p/task-master/core/error_msg"
 )
@@ -8,11 +9,11 @@ import (
 type SimpleSanitizer struct{}
 
 type SanitizedCommand struct {
-	command domain.CommandCode
-	jobs    []domain.Job
+	command interfaces.ICommandCode
+	jobs    []interfaces.IJob
 }
 
-func (self *SimpleSanitizer) Run(parsedComand domain.IParsedCommand) (domain.ISanitizedCommand, domain.IResponse) {
+func (self *SimpleSanitizer) Run(parsedComand interfaces.IParsedCommand) (interfaces.ISanitizedCommand, interfaces.IResponse) {
 	command := ValidateCommand(parsedComand.Command())
 	resp_builder := domain.NewResponseBuilder()
 

@@ -2,13 +2,14 @@ package parser
 
 import (
 	"github.com/touline-p/task-master/cli/domain"
+	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/infrastructure/parsing"
 	"github.com/touline-p/task-master/core/error_msg"
 )
 
 type SimpleParser struct{}
 
-func (self *SimpleParser) Run(line *string) (domain.IParsedCommand, domain.IResponse) {
+func (self *SimpleParser) Run(line *string) (interfaces.IParsedCommand, interfaces.IResponse) {
 	words := parsing.SplitSpaces(line)
 	resp_builder := domain.NewResponseBuilder()
 	if len(words) == 0 {

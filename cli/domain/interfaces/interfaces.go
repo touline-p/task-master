@@ -1,11 +1,20 @@
-package domain
+package interfaces
+
+type ICliControler interface {
+	Run()
+	LineGetter() ILineGetter
+	Parser()     IParser
+	Sanitizer()  ISanitizer
+	Launcher()   ILauncher
+}
 
 type IReader interface {
 	Run() (string, IResponse)
 }
 
+
 type ILineGetter interface {
-	Run([]IReader) (string, IResponse)
+	Run() (string, IResponse)
 }
 
 type IParsedCommand interface {
@@ -17,9 +26,15 @@ type IParser interface {
 	Run(*string) (IParsedCommand, IResponse)
 }
 
+type ICommandCode interface {}
+
+type IJob interface {}
+
+type IStatus interface {}
+
 type ISanitizedCommand interface {
-	Code() CommandCode
-	JobIds() []Job
+	Code() ICommandCode
+	JobIds() []IJob
 }
 
 type ISanitizer interface {
@@ -27,7 +42,7 @@ type ISanitizer interface {
 }
 
 type IStatusGetter interface {
-	Run(Job) Status
+	Run(IJob) IStatus
 }
 
 type ILauncher interface {
