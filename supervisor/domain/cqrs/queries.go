@@ -37,5 +37,8 @@ func (q *CheckJobHealthQuery) Type() string {
 }
 
 type IQueryHandler interface {
-	Handle(query Query) (any, error)
+	HandleGetJobStatuses(query *GetJobStatusesQuery) (map[models.JobId]models.JobState, error)
+	HandleGetJobById(query *GetJobByIdQuery) (models.Job, error)
+	HandleGetJobsByStatus(query *GetJobsByStatusQuery) ([]models.Job, error)
+	HandleCheckJobHealth(query *CheckJobHealthQuery) (map[models.JobId]bool, error)
 }
