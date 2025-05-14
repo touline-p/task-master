@@ -4,10 +4,8 @@ import (
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 )
 
-type SimpleLineGetter struct{
-	Readers []interfaces.IReader
-}
+type SimpleLineGetter struct{}
 
-func (lg *SimpleLineGetter) Run() (string, interfaces.IResponse) {
-	return lg.Readers[0].Run()
+func (lg *SimpleLineGetter) Run(readers []interfaces.IReader) (string, interfaces.IResponse) {
+	return readers[0].Run()
 }
