@@ -16,22 +16,7 @@ func NewJobCommandHandler(repository repositories.IJobRepository) cqrs.ICommandH
 	}
 }
 
-func (h *JobCommandHandler) Handle(command cqrs.Command) error {
-	switch cmd := command.(type) {
-	case *cqrs.StartJobCommand:
-		return h.handleStartJob(cmd)
-	case *cqrs.StopJobCommand:
-		return h.handleStopJob(cmd)
-	case *cqrs.RestartJobCommand:
-		return h.handleRestartJob(cmd)
-	case *cqrs.ProcessEventCommand:
-		return h.handleProcessEvent(cmd)
-	default:
-		return nil
-	}
-}
-
-func (h *JobCommandHandler) handleStartJob(cmd *cqrs.StartJobCommand) error {
+func (h *JobCommandHandler) HandleStartJob(cmd *cqrs.StartJobCommand) error {
 	job, err := h.repository.FindById(cmd.JobId)
 	if err != nil {
 		return err
@@ -45,7 +30,7 @@ func (h *JobCommandHandler) handleStartJob(cmd *cqrs.StartJobCommand) error {
 	return h.repository.Save(&job)
 }
 
-func (h *JobCommandHandler) handleStopJob(cmd *cqrs.StopJobCommand) error {
+func (h *JobCommandHandler) HandleStopJob(cmd *cqrs.StopJobCommand) error {
 	job, err := h.repository.FindById(cmd.JobId)
 	if err != nil {
 		return err
@@ -59,7 +44,7 @@ func (h *JobCommandHandler) handleStopJob(cmd *cqrs.StopJobCommand) error {
 	return h.repository.Save(&job)
 }
 
-func (h *JobCommandHandler) handleRestartJob(cmd *cqrs.RestartJobCommand) error {
+func (h *JobCommandHandler) HandleRestartJob(cmd *cqrs.RestartJobCommand) error {
 	job, err := h.repository.FindById(cmd.JobId)
 	if err != nil {
 		return err
@@ -83,7 +68,7 @@ func (h *JobCommandHandler) handleRestartJob(cmd *cqrs.RestartJobCommand) error 
 	return h.repository.Save(&job)
 }
 
-func (h *JobCommandHandler) handleProcessEvent(cmd *cqrs.ProcessEventCommand) error {
+func (h *JobCommandHandler) HandleProcessEvent(cmd *cqrs.ProcessEventCommand) error {
 	job, err := h.repository.FindById(cmd.Event.JobId)
 	if err != nil {
 		return err

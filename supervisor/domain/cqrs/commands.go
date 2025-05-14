@@ -55,5 +55,8 @@ func (c *ProcessEventCommand) Type() string {
 }
 
 type ICommandHandler interface {
-	Handle(command Command) error
+	HandleStartJob(command *StartJobCommand) error
+	HandleStopJob(command *StopJobCommand) error
+	HandleRestartJob(command *RestartJobCommand) error
+	HandleProcessEvent(command *ProcessEventCommand) error
 }

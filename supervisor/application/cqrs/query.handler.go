@@ -16,22 +16,7 @@ func NewJobQueryHandler(repository repositories.IJobRepository) cqrs.IQueryHandl
 	}
 }
 
-func (h *JobQueryHandler) Handle(query cqrs.Query) (any, error) {
-	switch q := query.(type) {
-	case *cqrs.GetJobStatusesQuery:
-		return h.handleGetJobStatuses(q)
-	case *cqrs.GetJobByIdQuery:
-		return h.handleGetJobById(q)
-	case *cqrs.GetJobsByStatusQuery:
-		return h.handleGetJobsByStatus(q)
-	case *cqrs.CheckJobHealthQuery:
-		return h.handleCheckJobHealth(q)
-	default:
-		return nil, nil
-	}
-}
-
-func (h *JobQueryHandler) handleGetJobStatuses(q *cqrs.GetJobStatusesQuery) (any, error) {
+func (h *JobQueryHandler) HandleGetJobStatuses(q *cqrs.GetJobStatusesQuery) (map[models.JobId]models.JobState, error) {
 	jobs, err := h.repository.FindAll()
 	if err != nil {
 		return nil, err
@@ -45,15 +30,15 @@ func (h *JobQueryHandler) handleGetJobStatuses(q *cqrs.GetJobStatusesQuery) (any
 	return statuses, nil
 }
 
-func (h *JobQueryHandler) handleGetJobById(q *cqrs.GetJobByIdQuery) (any, error) {
+func (h *JobQueryHandler) HandleGetJobById(q *cqrs.GetJobByIdQuery) (models.Job, error) {
 	return h.repository.FindById(q.JobId)
 }
 
-func (h *JobQueryHandler) handleGetJobsByStatus(q *cqrs.GetJobsByStatusQuery) (any, error) {
+func (h *JobQueryHandler) HandleGetJobsByStatus(q *cqrs.GetJobsByStatusQuery) ([]models.Job, error) {
 	return h.repository.FindByStatus(q.Status)
 }
 
-func (h *JobQueryHandler) handleCheckJobHealth(q *cqrs.CheckJobHealthQuery) (any, error) {
+func (h *JobQueryHandler) HandleCheckJobHealth(q *cqrs.CheckJobHealthQuery) (map[models.JobId]bool, error) {
 	jobs, err := h.repository.FindAll()
 	if err != nil {
 		return nil, err

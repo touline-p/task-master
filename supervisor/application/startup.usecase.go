@@ -30,7 +30,7 @@ func StartUpSupervisor() error {
 	var errors []error
 	for _, j := range jobs {
 		startCmd := &cqrs.StartJobCommand{JobId: j.Id}
-		if err := controller.CommandHandler().Handle(startCmd); err != nil {
+		if err := controller.CommandHandler().HandleStartJob(startCmd); err != nil {
 			errors = append(errors, err)
 		}
 	}
