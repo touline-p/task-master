@@ -1,20 +1,11 @@
 package interfaces
 
-type ICliControler interface {
-	Run()
-	LineGetter() ILineGetter
-	Parser()     IParser
-	Sanitizer()  ISanitizer
-	Launcher()   ILauncher
-}
-
 type IReader interface {
 	Run() (string, IResponse)
 }
 
-
 type ILineGetter interface {
-	Run() (string, IResponse)
+	Run([]IReader) (string, IResponse)
 }
 
 type IParsedCommand interface {
@@ -26,16 +17,13 @@ type IParser interface {
 	Run(*string) (IParsedCommand, IResponse)
 }
 
-type ICommandCode interface {}
-
-type IJob interface {}
-
-type IStatus interface {}
-
 type ISanitizedCommand interface {
 	Code() ICommandCode
 	JobIds() []IJob
 }
+type ICommandCode interface{}
+type IJob interface{}
+type IStatus interface{}
 
 type ISanitizer interface {
 	Run(IParsedCommand) (ISanitizedCommand, IResponse)
@@ -49,8 +37,12 @@ type ILauncher interface {
 	Run(ISanitizedCommand) IResponse
 }
 
-type IApplication interface {
-	Run() (any, IResponse)
+type IFormater interface {
+	Run(IResponse) string
+}
+
+type ISender interface {
+	Run(string)
 }
 
 type IResponse interface {
@@ -63,4 +55,6 @@ type IControler interface {
 	Parser() IParser
 	Sanitizer() ISanitizer
 	Launcher() ILauncher
+	Formater() IFormater
+	Sender() ISender
 }

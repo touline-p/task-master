@@ -9,7 +9,7 @@ import (
 type SimpleSanitizer struct{}
 
 type SanitizedCommand struct {
-	command interfaces.ICommandCode
+	command domain.CommandCode
 	jobs    []interfaces.IJob
 }
 
