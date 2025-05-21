@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
-	application.StartUpSupervisor()
+	if err := application.StartUpSupervisor(); err != nil {
+		panic(err)
+	}
 	cli_services.InterpreteOneUserCommand()
 }

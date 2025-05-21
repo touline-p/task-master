@@ -1,17 +1,19 @@
 package application
 
 import (
-	// TODO : Debug, a enlever
+	"context"
 	"os"
 
 	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
-	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	"github.com/touline-p/task-master/supervisor/domain/models"
 )
 
 func StartUpSupervisor() error {
+	ctx := context.Background()
 	controller := supervisor.GetSupervisorController()
+
+	jobService := controller.JobService()
 
 	jobs := make([]models.Job, 0, 1)
 	newJob := createDummyJob()
@@ -29,9 +31,10 @@ func StartUpSupervisor() error {
 
 	var errors []error
 	for _, j := range jobs {
-		startCmd := &cqrs.StartJobCommand{JobId: j.Id}
-		if err := controller.CommandHandler().HandleStartJob(startCmd); err != nil {
-			errors = append(errors, err)
+		if j.Config.AutoStart {
+			if err := jobService.StartJob(ctx, &j); err != nil {
+				errors = append(errors, err)
+			}
 		}
 	}
 
@@ -43,24 +46,23 @@ func StartUpSupervisor() error {
 }
 
 func createDummyJob() models.Job {
-	newExitCodes := make([]int, 0, 1)
 	newEnv := make(map[string]string)
 	newJobConfigValues := make([]models.JobConfigValue, 0, 1)
 	newJobConfig := models.JobConfig{
 		Name:          "Test Config",
-		Command:       "Command",
+		Command:       "echo 'Hello from Task Master'",
 		NumProcs:      1,
 		Umask:         os.FileMode(os.O_RDONLY),
-		WorkingDir:    "Working Dir",
+		WorkingDir:    "",
 		AutoStart:     true,
 		AutoRestart:   models.RestartNever,
-		ExitCodes:     newExitCodes,
-		StartRetries:  0,
+		ExitCodes:     []int{0},
+		StartRetries:  2,
 		StartDuration: 1,
 		StopSignal:    "SIGKILL",
 		StopDuration:  1,
-		Stdout:        "",
-		Stderr:        "",
+		Stdout:        "/tmp/taskmaster.log",
+		Stderr:        "/tmp/taskmaster-error.log",
 		Environment:   newEnv,
 		ConfigValues:  newJobConfigValues,
 	}
