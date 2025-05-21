@@ -7,7 +7,9 @@ import (
 
 func main() {
 	// use_case.Run()
-	application.StartUpSupervisor()
+	if err := application.StartUpSupervisor(); err != nil {
+		panic(err)
+	}
 }
 
 /*
