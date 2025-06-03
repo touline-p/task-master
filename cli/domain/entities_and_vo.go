@@ -28,10 +28,20 @@ type ResponseBuilder struct {
 func (b *ResponseBuilder) Warning(warn string) { b.warnings = append(b.warnings, warn) }
 func (b *ResponseBuilder) Error(error string)  { b.errors = append(b.errors, error) }
 func (b *ResponseBuilder) Info(warn string)    { b.warnings = append(b.warnings, warn) }
-func (b *ResponseBuilder) HandleCmd(errors error) {if errors != nil {b.Error(errors.Error())}}
-func (b *ResponseBuilder) HandleQuery(responses []string, errors[]error) {
-	for _, error:= range(errors) { if error != nil { b.Error(error.Error()) } }
-	for _, response := range(responses) { b.Info(response) }
+func (b *ResponseBuilder) HandleCmd(errors error) {
+	if errors != nil {
+		b.Error(errors.Error())
+	}
+}
+func (b *ResponseBuilder) HandleQuery(responses []string, errors []error) {
+	for _, error := range errors {
+		if error != nil {
+			b.Error(error.Error())
+		}
+	}
+	for _, response := range responses {
+		b.Info(response)
+	}
 }
 
 func (b *ResponseBuilder) Build() Response {

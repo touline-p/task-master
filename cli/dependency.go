@@ -43,14 +43,14 @@ func GetControlerCli() interfaces.IControler {
 		lineGetter: &linegetter.SimpleLineGetter{},
 		parser:     &parser.SimpleParser{},
 		sanitizer:  &sanitizer.SimpleSanitizer{},
-		launcher:   &launcher.SimpleLauncher{
+		launcher: &launcher.SimpleLauncher{
 			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
 				cmdHdlr,
 				qryHdlr,
 			),
 			SupervisorTranslator: &infrastructure.SupervisorTranslator{},
 		},
-		formater:   &formater.SimpleFormater{},
-		sender:     &sender.SimpleSender{},
+		formater: &formater.SimpleFormater{},
+		sender:   &sender.SimpleSender{},
 	}
 }

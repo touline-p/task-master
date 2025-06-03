@@ -40,7 +40,7 @@ func GetSimpleControler() IControler {
 			&parser.SimpleParser{},
 			&sanitizer.SimpleSanitizer{},
 			&launcher.SimpleLauncher{
-				SupervisorAdapter: supervisorAdapter,
+				SupervisorAdapter:    supervisorAdapter,
 				SupervisorTranslator: &infrastructure.SupervisorTranslator{},
 			},
 		),

@@ -10,12 +10,13 @@ import (
 
 type SimpleLauncher struct {
 	SupervisorTranslator interfaces.ISupervisorTranslator
-	SupervisorAdapter interfaces.ISupervisorAdapter
+	SupervisorAdapter    interfaces.ISupervisorAdapter
 }
 
-func (sl *SimpleLauncher) SvTranslator() interfaces.ISupervisorTranslator { return sl.SupervisorTranslator }
+func (sl *SimpleLauncher) SvTranslator() interfaces.ISupervisorTranslator {
+	return sl.SupervisorTranslator
+}
 func (sl *SimpleLauncher) SvAdapter() interfaces.ISupervisorAdapter { return sl.SupervisorAdapter }
-
 
 func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand) interfaces.IResponse {
 	resp_bldr := domain.NewResponseBuilder()
@@ -28,27 +29,27 @@ func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand) interfaces.IRespo
 	}
 
 	stringifiedJobs := []string{}
-	for _, jobId := range(cmd.JobIds()) {
+	for _, jobId := range cmd.JobIds() {
 		stringifiedJobs = append(stringifiedJobs, jobId.ToString())
 	}
 
 	translated_job := translator.Translate(stringifiedJobs)
 
 	switch cmd.Code() {
-		case sanitizer.CmdStart:
-			resp_bldr.HandleCmd(adapter.StartJobs(translated_job))
-		case sanitizer.CmdStop:
-			resp_bldr.HandleCmd(adapter.StopJobs(translated_job))
-		case sanitizer.CmdRestart:
-			resp_bldr.HandleCmd(adapter.RestartJobs(translated_job))
-		case sanitizer.CmdStatus:
-			query, err := adapter.GetJobStatuses(translated_job)
-			for key, value := range(query) {
-				resp_bldr.Info(key + statusToString(value))
-			}
-			resp_bldr.Error(err.Error())
-		default:
-			resp_bldr.Error(error_msg.BAD_COMMAND)
+	case sanitizer.CmdStart:
+		resp_bldr.HandleCmd(adapter.StartJobs(translated_job))
+	case sanitizer.CmdStop:
+		resp_bldr.HandleCmd(adapter.StopJobs(translated_job))
+	case sanitizer.CmdRestart:
+		resp_bldr.HandleCmd(adapter.RestartJobs(translated_job))
+	case sanitizer.CmdStatus:
+		query, err := adapter.GetJobStatuses(translated_job)
+		for key, value := range query {
+			resp_bldr.Info(key + statusToString(value))
+		}
+		resp_bldr.Error(err.Error())
+	default:
+		resp_bldr.Error(error_msg.BAD_COMMAND)
 	}
 	return resp_bldr.Build()
 }

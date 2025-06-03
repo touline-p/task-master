@@ -26,4 +26,3 @@ type ISupervisorAdapter interface {
 type ISupervisorTranslator interface {
 	Translate([]string) []string
 }
-
