@@ -1,7 +1,6 @@
 package dependency_injection
 
 import (
-	use_case "github.com/touline-p/task-master/cli/applications/entrypoint"
 	"github.com/touline-p/task-master/cli/applications/launcher"
 	linegetter "github.com/touline-p/task-master/cli/applications/line_getter"
 	"github.com/touline-p/task-master/cli/applications/parser"
@@ -41,7 +40,8 @@ func GetSimpleControler() IControler {
 			&parser.SimpleParser{},
 			&sanitizer.SimpleSanitizer{},
 			&launcher.SimpleLauncher{
-				SupervisorAdapter: supervisorAdapter,
+				SupervisorAdapter:    supervisorAdapter,
+				SupervisorTranslator: &infrastructure.SupervisorTranslator{},
 			},
 		),
 	}

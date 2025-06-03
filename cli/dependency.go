@@ -8,7 +8,9 @@ import (
 	sanitizer "github.com/touline-p/task-master/cli/applications/sanitizer"
 	"github.com/touline-p/task-master/cli/applications/sender"
 	"github.com/touline-p/task-master/cli/domain/interfaces"
+	"github.com/touline-p/task-master/cli/infrastructure"
 	linereaders "github.com/touline-p/task-master/cli/infrastructure/line_readers"
+	"github.com/touline-p/task-master/supervisor"
 )
 
 type Controler struct {
@@ -30,6 +32,9 @@ func (c *Controler) Formater() interfaces.IFormater     { return c.formater }
 func (c *Controler) Sender() interfaces.ISender         { return c.sender }
 
 func GetControlerCli() interfaces.IControler {
+	controler := supervisor.GetSupervisorController()
+	qryHdlr := controler.QueryHandler()
+	cmdHdlr := controler.CommandHandler()
 	return &Controler{
 		readers: []interfaces.IReader{
 			&linereaders.CliReader{},
@@ -38,8 +43,14 @@ func GetControlerCli() interfaces.IControler {
 		lineGetter: &linegetter.SimpleLineGetter{},
 		parser:     &parser.SimpleParser{},
 		sanitizer:  &sanitizer.SimpleSanitizer{},
-		launcher:   &launcher.SimpleLauncher{},
-		formater:   &formater.SimpleFormater{},
-		sender:     &sender.SimpleSender{},
+		launcher: &launcher.SimpleLauncher{
+			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
+				cmdHdlr,
+				qryHdlr,
+			),
+			SupervisorTranslator: &infrastructure.SupervisorTranslator{},
+		},
+		formater: &formater.SimpleFormater{},
+		sender:   &sender.SimpleSender{},
 	}
 }

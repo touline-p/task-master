@@ -22,7 +22,9 @@ type ISanitizedCommand interface {
 	JobIds() []IJob
 }
 type ICommandCode interface{}
-type IJob interface{}
+type IJob interface {
+	ToString() string
+}
 type IStatus interface{}
 
 type ISanitizer interface {
@@ -35,6 +37,8 @@ type IStatusGetter interface {
 
 type ILauncher interface {
 	Run(ISanitizedCommand) IResponse
+	SvTranslator() ISupervisorTranslator
+	SvAdapter() ISupervisorAdapter
 }
 
 type IFormater interface {
