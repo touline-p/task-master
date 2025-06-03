@@ -15,7 +15,15 @@ const (
 
 type ISupervisorAdapter interface {
 	StartJob(jobId string) error
+	StartJobs(jobIds []string) error
 	StopJob(jobId string) error
+	StopJobs(jobIds []string) error
 	RestartJob(jobId string) error
-	GetJobStatuses() (map[string]JobStatus, error)
+	RestartJobs(jobIds []string) error
+	GetJobStatuses(jobIds []string) (map[string]JobStatus, error)
 }
+
+type ISupervisorTranslator interface {
+	Translate([]string) []string
+}
+

@@ -7,6 +7,10 @@ import (
 )
 
 // ACL
+type SupervisorTranslator struct {}
+
+func (st *SupervisorTranslator)Translate(strings []string) []string {return strings}
+
 type SupervisorAdapter struct {
 	commandHandler cqrs.ICommandHandler
 	queryHandler   cqrs.IQueryHandler
@@ -19,6 +23,19 @@ func NewSupervisorAdapter(commandHandler cqrs.ICommandHandler, queryHandler cqrs
 	}
 }
 
+func (a *SupervisorAdapter) StartJobs(jobIds []string) error {
+	for _, jobId := range(jobIds) {
+		a.StartJob(jobId)
+	}
+	return nil
+}
+
+func (a *SupervisorAdapter) StopJobs(jobIds []string) error {
+	for _, jobId := range(jobIds) {
+		a.StopJob(jobId)
+	}
+	return nil
+}
 func (a *SupervisorAdapter) StartJob(jobId string) error {
 	cmd := &cqrs.StartJobCommand{JobId: supModels.JobId(jobId)}
 	return a.commandHandler.HandleStartJob(cmd)
@@ -34,8 +51,15 @@ func (a *SupervisorAdapter) RestartJob(jobId string) error {
 	return a.commandHandler.HandleRestartJob(cmd)
 }
 
+func (a *SupervisorAdapter) RestartJobs(jobIds[] string) error {
+	for _, jobId := range(jobIds) {
+		a.RestartJob(jobId)
+	}
+	return nil
+}
+
 // Translate supervisor -> cli
-func (a *SupervisorAdapter) GetJobStatuses() (map[string]interfaces.JobStatus, error) {
+func (a *SupervisorAdapter) GetJobStatuses(jobIds[]string) (map[string]interfaces.JobStatus, error) {
 	query := &cqrs.GetJobStatusesQuery{}
 	result, err := a.queryHandler.HandleGetJobStatuses(query)
 	if err != nil {
