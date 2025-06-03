@@ -38,7 +38,6 @@ func GetControlerCli() interfaces.IControler {
 	return &Controler{
 		readers: []interfaces.IReader{
 			&linereaders.CliReader{},
-			&linereaders.SocketReader{},
 		},
 		lineGetter: &linegetter.SimpleLineGetter{},
 		parser:     &parser.SimpleParser{},

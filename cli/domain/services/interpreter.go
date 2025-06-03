@@ -13,9 +13,14 @@ func InterpreteOneUserCommand() {
 	sender := controler.Sender()
 
 	line, response := linegetter.Run(controler.Readers())
+	print(line)
 	parsedCommand, response := parser.Run(&line)
+	print(parsedCommand)
 	sanitizedCommand, response := sanitizer.Run(parsedCommand)
+	print(sanitizedCommand)
 	response = launcher.Run(sanitizedCommand)
+	print(response)
 	formatedString := formater.Run(response)
+	print(formatedString)
 	sender.Run(formatedString)
 }
