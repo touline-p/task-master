@@ -19,11 +19,17 @@ var Gray = "\033[37m"
 var White = "\033[97m"
 
 func (f *SimpleFormater) Run(r interfaces.IResponse) string {
-	return_string := []string{} 
+	return_string := []string{}
 
-	for _, info := range(r.Infos()) { return_string = append(return_string, info) }
-	for _, info := range(r.Errors()) { return_string = append(return_string, info) }
-	for _, info := range(r.Warnings()) { return_string = append(return_string, info) }
+	for _, info := range r.Infos() {
+		return_string = append(return_string, info)
+	}
+	for _, info := range r.Errors() {
+		return_string = append(return_string, info)
+	}
+	for _, info := range r.Warnings() {
+		return_string = append(return_string, info)
+	}
 	return_string = append(return_string, "")
 	return strings.Join(return_string, "\n")
 }

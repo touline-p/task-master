@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/domain"
+	"github.com/touline-p/task-master/cli/domain/interfaces"
 )
 
 type CliReader struct{}
