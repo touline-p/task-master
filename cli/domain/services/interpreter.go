@@ -12,8 +12,10 @@ func InterpreteOneUserCommand() {
 	formater := controler.Formater()
 	sender := controler.Sender()
 
+	print("reading and launching\n")
 	response := readAndExecuteLine()
 	formatedString := formater.Run(response)
+	print(formatedString)
 	sender.Run(formatedString)
 }
 
@@ -27,12 +29,15 @@ func readAndExecuteLine() interfaces.IResponse {
 
 	line, response := linegetter.Run(controler.Readers())
 	if response != nil { return response }
+	print("line was get\n")
 
 	parsedCommand, response := parser.Run(&line)
 	if response != nil { return response }
+	print("line was parsed\n")
 
 	sanitizedCommand, response := sanitizer.Run(parsedCommand)
 	if response != nil { return response }
+	print("line was sanitized\n")
 
 	response = launcher.Run(sanitizedCommand)
 	return response

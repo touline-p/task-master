@@ -56,6 +56,16 @@ func NewResponseBuilder() ResponseBuilder {
 	}
 }
 
+func (r Response) Infos() []string {
+	return r.info
+}
+func (r Response) Errors() []string {
+	return r.errors
+}
+func (r Response) Warnings() []string {
+	return r.warnings
+}
+
 func (r Response) Format() string {
 	format := "Errors : "
 	for _, e := range r.errors {

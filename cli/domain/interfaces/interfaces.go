@@ -1,7 +1,7 @@
 package interfaces
 
 type IReader interface {
-	Run(any) (any, IResponse)
+	Run() (string, IResponse)
 }
 
 type ILineGetter interface {
@@ -50,7 +50,9 @@ type ISender interface {
 }
 
 type IResponse interface {
-	Format() string
+	Infos() []string
+	Errors() []string
+	Warnings() []string
 }
 
 type IControler interface {

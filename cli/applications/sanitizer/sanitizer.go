@@ -1,6 +1,8 @@
 package sanitizer
 
 import (
+	"strings"
+
 	"github.com/touline-p/task-master/cli/domain"
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/core/error_msg"
@@ -29,6 +31,12 @@ func (self *SimpleSanitizer) Run(parsedComand interfaces.IParsedCommand) (interf
 		resp_builder.Error("command: " + parsedComand.Command() + " " + error_msg.BAD_COMMAND)
 		return nil, resp_builder.Build()
 	}
+
+	if command == CmdHelp {
+		resp_builder.Info("Available commands : " + strings.Join(CommandSymbols[1:], ", "))
+		return nil, resp_builder.Build()
+	}
+	// Get job status et faire en sorte que la commande est executable
 
 	return &SanitizedCommand{
 		command: command,
