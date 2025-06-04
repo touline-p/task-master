@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/touline-p/task-master/cli/domain"
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 )
 
@@ -13,7 +14,13 @@ type CliReader struct{}
 func (clrdr *CliReader) Run() (string, interfaces.IResponse) {
 	fmt.Print("Enter a line: ")
 	reader := bufio.NewReader(os.Stdin)
-	line, _ := reader.ReadString('\n')
+	line, error := reader.ReadString('\n')
+
+	if error != nil {
+		resp_builder := domain.NewResponseBuilder()
+		resp_builder.Error(error.Error())
+		return line, resp_builder.Build()
+	}
 	return line, nil
 }
 

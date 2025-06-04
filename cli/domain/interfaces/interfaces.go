@@ -50,7 +50,9 @@ type ISender interface {
 }
 
 type IResponse interface {
-	Format() string
+	Infos() []string
+	Errors() []string
+	Warnings() []string
 }
 
 type IControler interface {
