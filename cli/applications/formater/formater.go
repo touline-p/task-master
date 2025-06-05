@@ -1,6 +1,7 @@
 package formater
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/touline-p/task-master/cli/domain/interfaces"
@@ -32,4 +33,28 @@ func (f *SimpleFormater) Run(r interfaces.IResponse) string {
 	}
 	return_string = append(return_string, "")
 	return strings.Join(return_string, "\n")
+}
+
+type FancyFormater struct{}
+
+func (f *FancyFormater) Run(r interfaces.IResponse) string {
+	formated_infos := make([]string, len(r.Infos()))
+	formated_warns := make([]string, len(r.Warnings()))
+	formated_errors := make([]string, len(r.Errors()))
+	for i, s := range r.Infos() {
+		formated_infos[i] = fmt.Sprintf("%s%sINFO : %s%s", Reset, Gray, s, Reset)
+	}
+	for i, s := range r.Warnings() {
+		formated_warns[i] = fmt.Sprintf("%s%sWARN : %s%s", Reset, Yellow, s, Reset)
+	}
+	for i, s := range r.Errors() {
+		formated_errors[i] = fmt.Sprintf("%s%sERR  : %s%s", Reset, Red, s, Reset)
+	}
+
+	return fmt.Sprintf(
+		"%s%s%s",
+		strings.Join(formated_infos, ""),
+		strings.Join(formated_warns, ""),
+		strings.Join(formated_errors, ""),
+	)
 }

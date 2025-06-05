@@ -49,7 +49,7 @@ func GetControlerCli() interfaces.IControler {
 			),
 			SupervisorTranslator: &infrastructure.SupervisorTranslator{},
 		},
-		formater: &formater.SimpleFormater{},
+		formater: &formater.FancyFormater{},
 		sender:   &sender.SimpleSender{},
 	}
 }
