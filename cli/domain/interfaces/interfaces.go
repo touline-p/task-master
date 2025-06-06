@@ -1,11 +1,8 @@
 package interfaces
 
-type IReader interface {
-	Run() (string, IResponse)
-}
-
-type ILineGetter interface {
-	Run([]IReader) (string, IResponse)
+type IIOManager interface {
+	Read() (string, IResponseBuilder)
+	Write(string)
 }
 
 type IParsedCommand interface {
@@ -13,8 +10,16 @@ type IParsedCommand interface {
 	JobNames() []string
 }
 
+type IResponseBuilder interface {
+	Build() IResponse
+	Info(string)
+	Warning(string)
+	Error(string)
+	HasErrors() bool
+}
+
 type IParser interface {
-	Run(*string) (IParsedCommand, IResponse)
+	Run(*string, IResponseBuilder) (IParsedCommand, IResponseBuilder)
 }
 
 type ISanitizedCommand interface {
@@ -23,12 +28,12 @@ type ISanitizedCommand interface {
 }
 type ICommandCode interface{}
 type IJob interface {
-	ToString() string
+	Id() string
 }
 type IStatus interface{}
 
 type ISanitizer interface {
-	Run(IParsedCommand) (ISanitizedCommand, IResponse)
+	Run(IParsedCommand, IResponseBuilder) (ISanitizedCommand, IResponseBuilder)
 }
 
 type IStatusGetter interface {
@@ -36,7 +41,7 @@ type IStatusGetter interface {
 }
 
 type ILauncher interface {
-	Run(ISanitizedCommand) IResponse
+	Run(ISanitizedCommand, IResponseBuilder) IResponseBuilder
 	SvTranslator() ISupervisorTranslator
 	SvAdapter() ISupervisorAdapter
 }
@@ -56,8 +61,7 @@ type IResponse interface {
 }
 
 type IControler interface {
-	Readers() []IReader
-	LineGetter() ILineGetter
+	IOManager() IIOManager
 	Parser() IParser
 	Sanitizer() ISanitizer
 	Launcher() ILauncher

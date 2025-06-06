@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/touline-p/task-master/cli/domain/interfaces"
+
 type CommandCode int
 type JobId string
 type Status int
@@ -44,12 +46,16 @@ func (b *ResponseBuilder) HandleQuery(responses []string, errors []error) {
 	}
 }
 
-func (b *ResponseBuilder) Build() Response {
-	return Response{errors: b.errors, warnings: b.warnings, info: b.info}
+func (b *ResponseBuilder) Build() interfaces.IResponse {
+	return &Response{errors: b.errors, warnings: b.warnings, info: b.info}
 }
 
-func NewResponseBuilder() ResponseBuilder {
-	return ResponseBuilder{
+func (b *ResponseBuilder) HasErrors() bool {
+	return len(b.errors) > 0
+}
+
+func NewResponseBuilder() interfaces.IResponseBuilder {
+	return &ResponseBuilder{
 		errors:   []string{},
 		warnings: []string{},
 		info:     []string{},

@@ -156,3 +156,37 @@ func (j *Job) IsStartable() bool {
 func (j *Job) IsStoppable() bool {
 	return j.StateMachine.CanTransition(StatusStopping)
 }
+
+func (j *Job) HandleProcessEvent(event ProcessEvent) error {
+	if !event.CanApplyToStateMachine(j.StateMachine) {
+		return fmt.Errorf("job %s cannot handle event %s in current state %s",
+			j.Id, event.EventType, j.StateMachine.Current.Status)
+	}
+
+	switch event.EventType {
+	case ProcessStarted:
+		j.Pid = event.Pid
+		j.StartedAt = event.Timestamp
+		return event.ApplyToStateMachine(j.StateMachine)
+
+	case ProcessExited:
+		if err := event.ApplyToStateMachine(j.StateMachine); err != nil {
+			return err
+		}
+		j.Pid = 0
+		if j.ShouldRestart(event.ExitCode) {
+			if j.HasExceededRetries() {
+				return j.MarkAsFatal("Exceeded maximum number of retries")
+			}
+			return j.BackOff()
+		}
+		return nil
+
+	case ProcessFailed:
+		j.Pid = 0
+		return event.ApplyToStateMachine(j.StateMachine)
+
+	default:
+		return fmt.Errorf("unknown process event type: %s", event.EventType)
+	}
+}
