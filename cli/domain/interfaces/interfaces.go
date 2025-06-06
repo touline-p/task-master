@@ -23,7 +23,7 @@ type ISanitizedCommand interface {
 }
 type ICommandCode interface{}
 type IJob interface {
-	ToString() string
+	Id() string
 }
 type IStatus interface{}
 

@@ -2,10 +2,10 @@ package cli
 
 import (
 	"github.com/touline-p/task-master/cli/applications/formater"
-	launcher "github.com/touline-p/task-master/cli/applications/launcher"
+	"github.com/touline-p/task-master/cli/applications/launcher"
 	linegetter "github.com/touline-p/task-master/cli/applications/line_getter"
-	parser "github.com/touline-p/task-master/cli/applications/parser"
-	sanitizer "github.com/touline-p/task-master/cli/applications/sanitizer"
+	"github.com/touline-p/task-master/cli/applications/parser"
+	"github.com/touline-p/task-master/cli/applications/sanitizer"
 	"github.com/touline-p/task-master/cli/applications/sender"
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/infrastructure"
@@ -41,7 +41,13 @@ func GetControlerCli() interfaces.IControler {
 		},
 		lineGetter: &linegetter.SimpleLineGetter{},
 		parser:     &parser.SimpleParser{},
-		sanitizer:  &sanitizer.SimpleSanitizer{},
+		sanitizer: &sanitizer.SimpleSanitizer{
+			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
+				cmdHdlr,
+				qryHdlr,
+			),
+			SupervisorTranslator: &infrastructure.SupervisorTranslator{},
+		},
 		launcher: &launcher.SimpleLauncher{
 			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
 				cmdHdlr,

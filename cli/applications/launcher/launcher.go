@@ -23,14 +23,9 @@ func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand) interfaces.IRespo
 	translator := l.SvTranslator()
 	adapter := l.SvAdapter()
 
-	if cmd == nil {
-		resp_bldr.Error(error_msg.BAD_COMMAND)
-		return resp_bldr.Build()
-	}
-
 	stringifiedJobs := []string{}
-	for _, jobId := range cmd.JobIds() {
-		stringifiedJobs = append(stringifiedJobs, jobId.ToString())
+	for _, jobId := range translator.JobToString(cmd.JobIds()) {
+		stringifiedJobs = append(stringifiedJobs, jobId)
 	}
 
 	translated_job := translator.Translate(stringifiedJobs)
@@ -47,7 +42,9 @@ func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand) interfaces.IRespo
 		for key, value := range query {
 			resp_bldr.Info(key + statusToString(value))
 		}
-		resp_bldr.Error(err.Error())
+		if err != nil {
+			resp_bldr.Error(err.Error())
+		}
 	default:
 		resp_bldr.Error(error_msg.BAD_COMMAND)
 	}

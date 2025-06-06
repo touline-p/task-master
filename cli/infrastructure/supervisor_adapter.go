@@ -11,6 +11,29 @@ type SupervisorTranslator struct{}
 
 func (st *SupervisorTranslator) Translate(strings []string) []string { return strings }
 
+type CliJob struct {
+	id string
+}
+
+func (j *CliJob) Id() string {
+	return j.id
+}
+
+func (st *SupervisorTranslator) StringToJob(strings []string) []interfaces.IJob {
+	jobs := make([]interfaces.IJob, len(strings))
+	for i, s := range strings {
+		jobs[i] = &CliJob{id: s}
+	}
+	return jobs
+}
+func (st *SupervisorTranslator) JobToString(jobs []interfaces.IJob) []string {
+	strings := make([]string, len(jobs))
+	for i, j := range jobs {
+		strings[i] = j.Id()
+	}
+	return strings
+}
+
 type SupervisorAdapter struct {
 	commandHandler cqrs.ICommandHandler
 	queryHandler   cqrs.IQueryHandler

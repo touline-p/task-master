@@ -25,4 +25,6 @@ type ISupervisorAdapter interface {
 
 type ISupervisorTranslator interface {
 	Translate([]string) []string
+	StringToJob([]string) []IJob
+	JobToString([]IJob) []string
 }
