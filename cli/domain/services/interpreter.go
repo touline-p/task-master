@@ -9,22 +9,22 @@ func InterpreteOneUserCommand() {
 	controler := cli_dependency.GetControlerCli()
 
 	formater := controler.Formater()
-	sender := controler.Sender()
+	ioManager := controler.IOManager()
 
 	response := readAndExecuteLine()
 	formatedString := formater.Run(response)
-	sender.Run(formatedString)
+	ioManager.Write(formatedString)
 }
 
 func readAndExecuteLine() interfaces.IResponse {
 	controler := cli_dependency.GetControlerCli()
 
-	linegetter := controler.LineGetter()
+	ioManager := controler.IOManager()
 	parser := controler.Parser()
 	sanitizer := controler.Sanitizer()
 	launcher := controler.Launcher()
 
-	line, response := linegetter.Run(controler.Readers())
+	line, response := ioManager.Read()
 	if response != nil {
 		return response
 	}

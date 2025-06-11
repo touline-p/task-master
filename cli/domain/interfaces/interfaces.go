@@ -1,11 +1,8 @@
 package interfaces
 
-type IReader interface {
-	Run() (string, IResponse)
-}
-
-type ILineGetter interface {
-	Run([]IReader) (string, IResponse)
+type IIOManager interface {
+	Read() (string, IResponse)
+	Write(string) 
 }
 
 type IParsedCommand interface {
@@ -56,8 +53,7 @@ type IResponse interface {
 }
 
 type IControler interface {
-	Readers() []IReader
-	LineGetter() ILineGetter
+	IOManager() IIOManager
 	Parser() IParser
 	Sanitizer() ISanitizer
 	Launcher() ILauncher
