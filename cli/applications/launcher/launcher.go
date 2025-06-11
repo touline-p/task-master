@@ -47,7 +47,9 @@ func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand) interfaces.IRespo
 		for key, value := range query {
 			resp_bldr.Info(key + statusToString(value))
 		}
-		resp_bldr.Error(err.Error())
+		if err != nil {
+			resp_bldr.Error(err.Error())
+		}
 	default:
 		resp_bldr.Error(error_msg.BAD_COMMAND)
 	}
