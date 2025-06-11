@@ -12,20 +12,20 @@ import (
 )
 
 type Controler struct {
-	iomanager  interfaces.IIOManager
-	parser     interfaces.IParser
-	sanitizer  interfaces.ISanitizer
-	launcher   interfaces.ILauncher
-	formater   interfaces.IFormater
-	sender     interfaces.ISender
+	iomanager interfaces.IIOManager
+	parser    interfaces.IParser
+	sanitizer interfaces.ISanitizer
+	launcher  interfaces.ILauncher
+	formater  interfaces.IFormater
+	sender    interfaces.ISender
 }
 
-func (c *Controler) IOManager() interfaces.IIOManager      { return c.iomanager }
-func (c *Controler) Parser() interfaces.IParser         { return c.parser }
-func (c *Controler) Sanitizer() interfaces.ISanitizer   { return c.sanitizer }
-func (c *Controler) Launcher() interfaces.ILauncher     { return c.launcher }
-func (c *Controler) Formater() interfaces.IFormater     { return c.formater }
-func (c *Controler) Sender() interfaces.ISender         { return c.sender }
+func (c *Controler) IOManager() interfaces.IIOManager { return c.iomanager }
+func (c *Controler) Parser() interfaces.IParser       { return c.parser }
+func (c *Controler) Sanitizer() interfaces.ISanitizer { return c.sanitizer }
+func (c *Controler) Launcher() interfaces.ILauncher   { return c.launcher }
+func (c *Controler) Formater() interfaces.IFormater   { return c.formater }
+func (c *Controler) Sender() interfaces.ISender       { return c.sender }
 
 func GetControlerCli() interfaces.IControler {
 	controler := supervisor.GetSupervisorController()
@@ -33,8 +33,8 @@ func GetControlerCli() interfaces.IControler {
 	cmdHdlr := controler.CommandHandler()
 	return &Controler{
 		iomanager: &linereaders.CliManager{},
-		parser:     &parser.SimpleParser{},
-		sanitizer:  &sanitizer.SimpleSanitizer{},
+		parser:    &parser.SimpleParser{},
+		sanitizer: &sanitizer.SimpleSanitizer{},
 		launcher: &launcher.SimpleLauncher{
 			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
 				cmdHdlr,

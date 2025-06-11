@@ -10,12 +10,11 @@ import (
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 )
 
-type CliManager struct{
-	instream io.Reader
+type CliManager struct {
+	instream  io.Reader
 	outstream io.Writer
-	closer io.Closer
+	closer    io.Closer
 }
-
 
 func (clrdr *CliManager) Read() (string, interfaces.IResponse) {
 	fmt.Print("Enter a line: ")
@@ -29,6 +28,6 @@ func (clrdr *CliManager) Read() (string, interfaces.IResponse) {
 	return line, nil
 }
 
-func (clrdr *CliManager) Write(formated_response string) () {
-	println(formated_response);
+func (clrdr *CliManager) Write(formated_response string) {
+	println(formated_response)
 }

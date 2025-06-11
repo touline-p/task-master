@@ -2,7 +2,7 @@ package interfaces
 
 type IIOManager interface {
 	Read() (string, IResponse)
-	Write(string) 
+	Write(string)
 }
 
 type IParsedCommand interface {
