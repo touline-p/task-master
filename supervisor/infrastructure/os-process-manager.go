@@ -64,3 +64,23 @@ func (pm *OSProcessManager) SpawnProcess(ctx context.Context, job *models.Job) (
 
 	return cmd.Process.Pid, nil
 }
+
+func (pm *OSProcessManager) Signal(job *models.Job, sig os.Signal) error {
+	process, err := os.FindProcess(job.Pid)
+	if err != nil {
+		return err
+	}
+	return process.Signal(sig)
+}
+
+func (pm *OSProcessManager) Terminate(job *models.Job) error {
+	return pm.Signal(job, syscall.SIGTERM)
+}
+
+func (pm *OSProcessManager) Kill(job *models.Job) error {
+	process, err := os.FindProcess(job.Pid)
+	if err != nil {
+		return err
+	}
+	return process.Kill()
+}
