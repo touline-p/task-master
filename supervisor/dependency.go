@@ -2,28 +2,27 @@ package supervisor
 
 import (
 	appCqrs "github.com/touline-p/task-master/supervisor/application/cqrs"
-	"github.com/touline-p/task-master/supervisor/application/ports"
-	appServices "github.com/touline-p/task-master/supervisor/application/services"
+	"github.com/touline-p/task-master/supervisor/application/services"
 	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	"github.com/touline-p/task-master/supervisor/domain/repositories"
-	"github.com/touline-p/task-master/supervisor/domain/services"
+	svcInterfaces "github.com/touline-p/task-master/supervisor/domain/services"
 	"github.com/touline-p/task-master/supervisor/infrastructure"
 )
 
 type Controller struct {
 	repository     repositories.IJobRepository
-	scheduler      services.ISchedulerService
+	scheduler      svcInterfaces.ISchedulerService
 	commandHandler cqrs.ICommandHandler
 	queryHandler   cqrs.IQueryHandler
-	processManager ports.ProcessManager
-	jobService     *appServices.JobService
+	processManager svcInterfaces.IProcessManager
+	jobService     *services.JobService
 }
 
 func (c *Controller) Repository() repositories.IJobRepository {
 	return c.repository
 }
 
-func (c *Controller) Scheduler() services.ISchedulerService {
+func (c *Controller) Scheduler() svcInterfaces.ISchedulerService {
 	return c.scheduler
 }
 
@@ -35,11 +34,11 @@ func (c *Controller) QueryHandler() cqrs.IQueryHandler {
 	return c.queryHandler
 }
 
-func (c *Controller) ProcessManager() ports.ProcessManager {
+func (c *Controller) ProcessManager() svcInterfaces.IProcessManager {
 	return c.processManager
 }
 
-func (c *Controller) JobService() *appServices.JobService {
+func (c *Controller) JobService() *services.JobService {
 	return c.jobService
 }
 
@@ -48,13 +47,13 @@ func GetSupervisorController() *Controller {
 	commandHandler := appCqrs.NewJobCommandHandler(repository)
 	queryHandler := appCqrs.NewJobQueryHandler(repository)
 	processManager := infrastructure.NewOSProcessManager()
-	jobService := appServices.NewJobService(processManager)
+	jobService := services.NewJobService(processManager)
 
 	return &Controller{
 		repository:     repository,
 		commandHandler: commandHandler,
 		queryHandler:   queryHandler,
-		scheduler:      appServices.NewSchedulerService(repository, commandHandler, queryHandler),
+		scheduler:      services.NewSchedulerService(repository, commandHandler, queryHandler),
 		processManager: processManager,
 		jobService:     jobService,
 	}

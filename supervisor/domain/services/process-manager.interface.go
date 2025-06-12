@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"os"
 
 	"github.com/touline-p/task-master/supervisor/domain/models"
@@ -8,7 +9,7 @@ import (
 
 // Low-level process operations
 type IProcessManager interface {
-	Launch(job *models.Job) (int, error)
+	Launch(ctx context.Context, job *models.Job) (int, error)
 	Signal(job *models.Job, signal os.Signal) error
 	Terminate(job *models.Job) error
 	Kill(job *models.Job) error

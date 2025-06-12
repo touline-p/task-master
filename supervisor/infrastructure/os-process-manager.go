@@ -9,15 +9,16 @@ import (
 	"syscall"
 
 	"github.com/touline-p/task-master/supervisor/domain/models"
+	"github.com/touline-p/task-master/supervisor/domain/services"
 )
 
 type OSProcessManager struct{}
 
-func NewOSProcessManager() *OSProcessManager {
+func NewOSProcessManager() services.IProcessManager {
 	return &OSProcessManager{}
 }
 
-func (pm *OSProcessManager) SpawnProcess(ctx context.Context, job *models.Job) (int, error) {
+func (pm *OSProcessManager) Launch(ctx context.Context, job *models.Job) (int, error) {
 	cmdParts := strings.Fields(job.Config.Command)
 	if len(cmdParts) == 0 {
 		return 0, fmt.Errorf("empty command")
