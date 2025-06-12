@@ -4,6 +4,7 @@ import (
 	"errors"
 	"maps"
 	"slices"
+	"sync"
 
 	"github.com/touline-p/task-master/supervisor/domain/models"
 	"github.com/touline-p/task-master/supervisor/domain/repositories"
@@ -18,8 +19,19 @@ type JobRepository struct {
 	jobsMap map[models.JobId]models.Job
 }
 
-func NewJobRepository() repositories.IJobRepository {
-	return &JobRepository{jobsMap: map[models.JobId]models.Job{}}
+var lock = &sync.Mutex{}
+
+var singleJobRepository *JobRepository
+
+func GetJobRepository() repositories.IJobRepository {
+	if singleJobRepository == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if singleJobRepository == nil {
+			singleJobRepository = &JobRepository{jobsMap: map[models.JobId]models.Job{}}
+		}
+	}
+	return singleJobRepository
 }
 
 func (jr JobRepository) Save(job *models.Job) error {
