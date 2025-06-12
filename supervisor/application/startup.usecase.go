@@ -33,7 +33,7 @@ func StartUpSupervisor() error {
 	var startErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StartJob(ctx, &j); err != nil {
+			if err := jobService.StartJob(ctx, j.Id); err != nil {
 				startErrors = append(startErrors, err)
 			}
 		}
@@ -44,7 +44,7 @@ func StartUpSupervisor() error {
 	var stopErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StopJob(ctx, &j); err != nil {
+			if err := jobService.StopJob(ctx, j.Id); err != nil {
 				stopErrors = append(stopErrors, err)
 			}
 		}
@@ -65,8 +65,8 @@ func createDummyJob() models.Job {
 	newEnv := make(map[string]string)
 	newJobConfigValues := make([]models.JobConfigValue, 0, 1)
 	newJobConfig := models.JobConfig{
-		Name:          "Yes",
-		Command:       "yes",
+		Name:          "Tail",
+		Command:       "tail -f /dev/null",
 		NumProcs:      1,
 		Umask:         os.FileMode(os.O_RDONLY),
 		WorkingDir:    "",
@@ -82,5 +82,5 @@ func createDummyJob() models.Job {
 		Environment:   newEnv,
 		ConfigValues:  newJobConfigValues,
 	}
-	return *models.NewJob("Yes", newJobConfig)
+	return *models.NewJob("Tail", newJobConfig)
 }

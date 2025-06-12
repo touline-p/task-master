@@ -47,7 +47,7 @@ func GetSupervisorController() *Controller {
 	commandHandler := appCqrs.NewJobCommandHandler(repository)
 	queryHandler := appCqrs.NewJobQueryHandler(repository)
 	processManager := infrastructure.NewOSProcessManager()
-	jobService := services.NewJobService(processManager)
+	jobService := services.NewJobService(processManager, repository)
 
 	return &Controller{
 		repository:     repository,

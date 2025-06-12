@@ -13,6 +13,6 @@ type IProcessManager interface {
 	Signal(job *models.Job, signal os.Signal) error
 	Terminate(job *models.Job) error
 	Kill(job *models.Job) error
-	IsRunning(job *models.Job) bool
-	GetProcessInfo(job *models.Job) (*os.Process, error)
+	// IsRunning(job *models.Job) bool
+	// GetProcessInfo(job *models.Job) (*os.Process, error)
 }
