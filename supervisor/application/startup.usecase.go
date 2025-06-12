@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
@@ -30,17 +31,32 @@ func StartUpSupervisor() error {
 		return err
 	}
 
-	var errors []error
+	var startErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StartJob(ctx, &j); err != nil {
-				errors = append(errors, err)
+			if err := jobService.StartJob(ctx, j.Id); err != nil {
+				startErrors = append(startErrors, err)
 			}
 		}
 	}
 
-	if len(errors) > 0 {
-		return services.ConcatenateErrors(errors)
+	time.Sleep(10 * time.Second)
+
+	var stopErrors []error
+	for _, j := range jobs {
+		if j.Config.AutoStart {
+			if err := jobService.StopJob(ctx, j.Id); err != nil {
+				stopErrors = append(stopErrors, err)
+			}
+		}
+	}
+
+	if len(startErrors) > 0 {
+		return services.ConcatenateErrors(startErrors)
+	}
+
+	if len(stopErrors) > 0 {
+		return services.ConcatenateErrors(stopErrors)
 	}
 
 	return nil
@@ -50,8 +66,8 @@ func createDummyJob() models.Job {
 	newEnv := make(map[string]string)
 	newJobConfigValues := make([]models.JobConfigValue, 0, 1)
 	newJobConfig := models.JobConfig{
-		Name:          "TestConfig",
-		Command:       "echo 'Hello from Task Master'",
+		Name:          "Tail",
+		Command:       "tail -f /dev/null",
 		NumProcs:      1,
 		Umask:         os.FileMode(os.O_RDONLY),
 		WorkingDir:    "",
@@ -60,12 +76,12 @@ func createDummyJob() models.Job {
 		ExitCodes:     []int{0},
 		StartRetries:  2,
 		StartDuration: 1,
-		StopSignal:    "SIGKILL",
+		StopSignal:    "SIGTERM",
 		StopDuration:  1,
 		Stdout:        "/tmp/taskmaster.log",
 		Stderr:        "/tmp/taskmaster-error.log",
 		Environment:   newEnv,
 		ConfigValues:  newJobConfigValues,
 	}
-	return *models.NewJob("Testjob", newJobConfig)
+	return *models.NewJob("Tail", newJobConfig)
 }
