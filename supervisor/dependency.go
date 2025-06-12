@@ -43,7 +43,7 @@ func (c *Controller) JobService() *services.JobService {
 }
 
 func GetSupervisorController() *Controller {
-	repository := infrastructure.NewJobRepository()
+	repository := infrastructure.GetJobRepository()
 	commandHandler := appCqrs.NewJobCommandHandler(repository)
 	queryHandler := appCqrs.NewJobQueryHandler(repository)
 	processManager := infrastructure.NewOSProcessManager()
