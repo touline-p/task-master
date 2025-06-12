@@ -42,7 +42,7 @@ func (s *JobService) StartJob(ctx context.Context, jobId models.JobId) error {
 	})
 }
 
-func (s *JobService) StopJob(ctx context.Context, jobId models.JobId) error {
+func (s *JobService) StopJob(jobId models.JobId) error {
 	job, err := s.repository.FindById(jobId)
 	if err != nil {
 		return fmt.Errorf("job not found: %w", err)
@@ -62,6 +62,40 @@ func (s *JobService) StopJob(ctx context.Context, jobId models.JobId) error {
 		}
 
 		return job.MarkAsStopped()
+	})
+}
+
+func (s *JobService) HandleProcessEvent(event models.ProcessEvent) error {
+	job, err := s.repository.FindById(event.JobId)
+	if err != nil {
+		return fmt.Errorf("job not found: %w", err)
+	}
+
+	return s.withSave(&job, func() error {
+		switch event.EventType {
+		case models.ProcessStarted:
+			err = job.MarkAsRunning(0) // TODO : pid
+		case models.ProcessExited:
+			err = job.MarkAsExited(event.ExitCode)
+			if err == nil && job.ShouldRestart(event.ExitCode) {
+				if job.HasExceededRetries() {
+					err = job.MarkAsFatal("Exceeded maximum retry attempts")
+				} else {
+					err = job.BackOff()
+				}
+			}
+		case models.ProcessFailed:
+			if event.Error != nil {
+				err = job.MarkAsFatal(event.Error.Error())
+			} else {
+				err = job.MarkAsFatal("Process failed")
+			}
+		}
+
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 }
 
