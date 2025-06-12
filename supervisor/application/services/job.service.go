@@ -14,7 +14,7 @@ type JobService struct {
 	repository     repositories.IJobRepository
 }
 
-func NewJobService(processManager services.IProcessManager, repository repositories.IJobRepository) *JobService {
+func NewJobService(processManager services.IProcessManager, repository repositories.IJobRepository) services.IJobService {
 	return &JobService{
 		processManager: processManager,
 		repository:     repository,
@@ -38,7 +38,11 @@ func (s *JobService) StartJob(ctx context.Context, jobId models.JobId) error {
 			return err
 		}
 
-		return job.MarkAsRunning(pid)
+		if err := job.MarkAsRunning(pid); err != nil {
+			return err
+		}
+
+		return nil
 	})
 }
 
@@ -74,7 +78,7 @@ func (s *JobService) HandleProcessEvent(event models.ProcessEvent) error {
 	return s.withSave(&job, func() error {
 		switch event.EventType {
 		case models.ProcessStarted:
-			err = job.MarkAsRunning(0) // TODO : pid
+			err = job.MarkAsRunning(event.Pid)
 		case models.ProcessExited:
 			err = job.MarkAsExited(event.ExitCode)
 			if err == nil && job.ShouldRestart(event.ExitCode) {

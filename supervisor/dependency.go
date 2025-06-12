@@ -15,7 +15,8 @@ type Controller struct {
 	commandHandler cqrs.ICommandHandler
 	queryHandler   cqrs.IQueryHandler
 	processManager svcInterfaces.IProcessManager
-	jobService     *services.JobService
+	watcher        svcInterfaces.IWatcherService
+	jobService     svcInterfaces.IJobService
 }
 
 func (c *Controller) Repository() repositories.IJobRepository {
@@ -38,8 +39,12 @@ func (c *Controller) ProcessManager() svcInterfaces.IProcessManager {
 	return c.processManager
 }
 
-func (c *Controller) JobService() *services.JobService {
+func (c *Controller) JobService() svcInterfaces.IJobService {
 	return c.jobService
+}
+
+func (c *Controller) Watcher() svcInterfaces.IWatcherService {
+	return c.watcher
 }
 
 func GetSupervisorController() *Controller {
@@ -49,11 +54,13 @@ func GetSupervisorController() *Controller {
 	jobService := services.NewJobService(processManager, repository)
 	commandHandler := appCqrs.NewJobCommandHandler(jobService)
 	scheduler := services.NewSchedulerService(repository, commandHandler, queryHandler)
+	watcher := infrastructure.NewProcessWatcher(processManager, jobService)
 
 	return &Controller{
 		repository:     repository,
 		queryHandler:   queryHandler,
 		processManager: processManager,
+		watcher:        watcher,
 		jobService:     jobService,
 		commandHandler: commandHandler,
 		scheduler:      scheduler,

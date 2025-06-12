@@ -6,16 +6,22 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"syscall"
 
 	"github.com/touline-p/task-master/supervisor/domain/models"
 	"github.com/touline-p/task-master/supervisor/domain/services"
 )
 
-type OSProcessManager struct{}
+type OSProcessManager struct {
+	mutex     sync.RWMutex
+	processes map[models.JobId]*exec.Cmd
+}
 
 func NewOSProcessManager() services.IProcessManager {
-	return &OSProcessManager{}
+	return &OSProcessManager{
+		processes: make(map[models.JobId]*exec.Cmd),
+	}
 }
 
 func (pm *OSProcessManager) Launch(ctx context.Context, job *models.Job) (int, error) {
@@ -63,6 +69,10 @@ func (pm *OSProcessManager) Launch(ctx context.Context, job *models.Job) (int, e
 		return 0, fmt.Errorf("failed to start process: %w", err)
 	}
 
+	pm.mutex.Lock()
+	pm.processes[job.Id] = cmd
+	pm.mutex.Unlock()
+
 	return cmd.Process.Pid, nil
 }
 
@@ -84,4 +94,31 @@ func (pm *OSProcessManager) Kill(job *models.Job) error {
 		return err
 	}
 	return process.Kill()
+}
+
+func (pm *OSProcessManager) WaitForExit(jobId models.JobId) (int, error, bool) {
+	pm.mutex.RLock()
+	cmd, exists := pm.processes[jobId]
+	pm.mutex.RUnlock()
+
+	if !exists {
+		return 0, fmt.Errorf("process not found for job %s", jobId), false
+	}
+
+	err := cmd.Wait()
+
+	pm.mutex.Lock()
+	delete(pm.processes, jobId)
+	pm.mutex.Unlock()
+
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
+				return status.ExitStatus(), nil, true
+			}
+		}
+		return 0, err, false
+	}
+
+	return 0, nil, true
 }
