@@ -16,16 +16,15 @@ type CliManager struct {
 	closer    io.Closer
 }
 
-func (clrdr *CliManager) Read() (string, interfaces.IResponse) {
+func (clrdr *CliManager) Read() (string, interfaces.IResponseBuilder) {
+	resp_builder := domain.NewResponseBuilder()
 	fmt.Print("Enter a line: ")
 	reader := bufio.NewReader(os.Stdin)
 	line, error := reader.ReadString('\n')
 	if error != nil {
-		resp_builder := domain.NewResponseBuilder()
 		resp_builder.Error(fmt.Sprintln("Cli reader : ", error.Error()))
-		return line, resp_builder.Build()
 	}
-	return line, nil
+	return line, resp_builder
 }
 
 func (clrdr *CliManager) Write(formated_response string) {

@@ -21,6 +21,7 @@ func StartUpSupervisor() error {
 	jobs = append(jobs, newJob)
 
 	err := controller.Scheduler().RegisterJobs(jobs)
+
 	if err != nil {
 		return err
 	}

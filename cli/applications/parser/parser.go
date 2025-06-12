@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/touline-p/task-master/cli/domain"
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/cli/infrastructure/parsing"
 	"github.com/touline-p/task-master/core/error_msg"
@@ -9,17 +8,16 @@ import (
 
 type SimpleParser struct{}
 
-func (self *SimpleParser) Run(line *string) (interfaces.IParsedCommand, interfaces.IResponse) {
+func (self *SimpleParser) Run(line *string, bldr interfaces.IResponseBuilder) (interfaces.IParsedCommand, interfaces.IResponseBuilder) {
 	words := parsing.SplitSpaces(line)
-	resp_builder := domain.NewResponseBuilder()
 	if len(words) == 0 {
-		resp_builder.Error(error_msg.NO_INPUT)
-		return nil, resp_builder.Build()
+		bldr.Error(error_msg.NO_INPUT)
+		return nil, bldr
 	}
 	return &SimpleParsedCommand{
 		command:  words[0],
 		jobNames: words[1:],
-	}, nil
+	}, bldr
 }
 
 type SimpleParsedCommand struct {

@@ -11,8 +11,8 @@ func InterpreteOneUserCommand() {
 	formater := controler.Formater()
 	ioManager := controler.IOManager()
 
-	response := readAndExecuteLine()
-	formatedString := formater.Run(response)
+	resp_builder := readAndExecuteLine()
+	formatedString := formater.Run(resp_builder)
 	ioManager.Write(formatedString)
 }
 
@@ -24,21 +24,21 @@ func readAndExecuteLine() interfaces.IResponse {
 	sanitizer := controler.Sanitizer()
 	launcher := controler.Launcher()
 
-	line, response := ioManager.Read()
-	if response != nil {
-		return response
+	line, resp_builder := ioManager.Read()
+	if resp_builder.HasErrors() {
+		return resp_builder.Build()
 	}
 
-	parsedCommand, response := parser.Run(&line)
-	if response != nil {
-		return response
+	parsedCommand, resp_builder := parser.Run(&line, resp_builder)
+	if resp_builder.HasErrors() {
+		return resp_builder.Build()
 	}
 
-	sanitizedCommand, response := sanitizer.Run(parsedCommand)
-	if response != nil {
-		return response
+	sanitizedCommand, resp_builder := sanitizer.Run(parsedCommand, resp_builder)
+	if resp_builder.HasErrors() {
+		return resp_builder.Build()
 	}
 
-	response = launcher.Run(sanitizedCommand)
-	return response
+	resp_builder = launcher.Run(sanitizedCommand, resp_builder)
+	return resp_builder.Build()
 }

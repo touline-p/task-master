@@ -1,6 +1,8 @@
 package infrastructure
 
 import (
+	"fmt"
+
 	"github.com/touline-p/task-master/cli/domain/interfaces"
 	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	supModels "github.com/touline-p/task-master/supervisor/domain/models"
@@ -10,6 +12,29 @@ import (
 type SupervisorTranslator struct{}
 
 func (st *SupervisorTranslator) Translate(strings []string) []string { return strings }
+
+type CliJob struct {
+	id string
+}
+
+func (j *CliJob) Id() string {
+	return j.id
+}
+
+func (st *SupervisorTranslator) StringToJob(strings []string) []interfaces.IJob {
+	jobs := make([]interfaces.IJob, len(strings))
+	for i, s := range strings {
+		jobs[i] = &CliJob{id: s}
+	}
+	return jobs
+}
+func (st *SupervisorTranslator) JobToString(jobs []interfaces.IJob) []string {
+	strings := make([]string, len(jobs))
+	for i, j := range jobs {
+		strings[i] = j.Id()
+	}
+	return strings
+}
 
 type SupervisorAdapter struct {
 	commandHandler cqrs.ICommandHandler
@@ -63,6 +88,7 @@ func (a *SupervisorAdapter) GetJobStatuses(jobIds []string) (map[string]interfac
 	query := &cqrs.GetJobStatusesQuery{}
 	result, err := a.queryHandler.HandleGetJobStatuses(query)
 	if err != nil {
+		println("an error occured, fuck.")
 		return nil, err
 	}
 
@@ -72,8 +98,28 @@ func (a *SupervisorAdapter) GetJobStatuses(jobIds []string) (map[string]interfac
 		cliStatus := mapSupervisorStatus(state.Status)
 		statuses[string(id)] = cliStatus
 	}
+	println(len(statuses))
+	for key, value := range statuses {
+		fmt.Println("%s, %d", key, value)
+	}
 
+	if len(jobIds) > 0 {
+		filterStatusesMap(statuses, jobIds)
+	}
 	return statuses, nil
+}
+
+func filterStatusesMap(m map[string]interfaces.JobStatus, jobIds []string) {
+	keepSet := make(map[string]bool)
+	for _, key := range jobIds {
+		keepSet[key] = true
+	}
+
+	for key := range m {
+		if !keepSet[key] {
+			delete(m, key)
+		}
+	}
 }
 
 func mapSupervisorStatus(status supModels.JobStatus) interfaces.JobStatus {

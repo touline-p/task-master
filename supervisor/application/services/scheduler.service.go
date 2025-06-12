@@ -29,6 +29,5 @@ func (ss *SchedulerService) RegisterJobs(jobs []models.Job) error {
 			errors = append(errors, err)
 		}
 	}
-
 	return ConcatenateErrors(errors)
 }
