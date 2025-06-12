@@ -44,17 +44,18 @@ func (c *Controller) JobService() *services.JobService {
 
 func GetSupervisorController() *Controller {
 	repository := infrastructure.GetJobRepository()
-	commandHandler := appCqrs.NewJobCommandHandler(repository)
 	queryHandler := appCqrs.NewJobQueryHandler(repository)
 	processManager := infrastructure.NewOSProcessManager()
 	jobService := services.NewJobService(processManager, repository)
+	commandHandler := appCqrs.NewJobCommandHandler(jobService)
+	scheduler := services.NewSchedulerService(repository, commandHandler, queryHandler)
 
 	return &Controller{
 		repository:     repository,
-		commandHandler: commandHandler,
 		queryHandler:   queryHandler,
-		scheduler:      services.NewSchedulerService(repository, commandHandler, queryHandler),
 		processManager: processManager,
 		jobService:     jobService,
+		commandHandler: commandHandler,
+		scheduler:      scheduler,
 	}
 }

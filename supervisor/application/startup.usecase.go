@@ -1,20 +1,16 @@
 package application
 
 import (
-	"context"
 	"os"
-	"time"
 
 	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
+	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	"github.com/touline-p/task-master/supervisor/domain/models"
 )
 
 func StartUpSupervisor() error {
-	ctx := context.Background()
 	controller := supervisor.GetSupervisorController()
-
-	jobService := controller.JobService()
 
 	jobs := make([]models.Job, 0, 1)
 	newJob := createDummyJob()
@@ -34,29 +30,15 @@ func StartUpSupervisor() error {
 	var startErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StartJob(ctx, j.Id); err != nil {
+			startCmd := &cqrs.StartJobCommand{JobId: j.Id}
+			if err := controller.CommandHandler().HandleStartJob(startCmd); err != nil {
 				startErrors = append(startErrors, err)
-			}
-		}
-	}
-
-	time.Sleep(10 * time.Second)
-
-	var stopErrors []error
-	for _, j := range jobs {
-		if j.Config.AutoStart {
-			if err := jobService.StopJob(ctx, j.Id); err != nil {
-				stopErrors = append(stopErrors, err)
 			}
 		}
 	}
 
 	if len(startErrors) > 0 {
 		return services.ConcatenateErrors(startErrors)
-	}
-
-	if len(stopErrors) > 0 {
-		return services.ConcatenateErrors(stopErrors)
 	}
 
 	return nil
