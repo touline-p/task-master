@@ -3,6 +3,10 @@ package application
 import (
 	"os"
 
+
+	config_parser "github.com/touline-p/task-master/config_parser/domain"
+
+
 	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
 	"github.com/touline-p/task-master/supervisor/domain/cqrs"
@@ -12,11 +16,21 @@ import (
 func StartUpSupervisor() error {
 	controller := supervisor.GetSupervisorController()
 
-	jobs := make([]models.Job, 0, 1)
-	newJob := createDummyJob()
-	jobs = append(jobs, newJob)
 
-	err := controller.Scheduler().RegisterJobs(jobs)
+	configs, err := config_parser.LoadConfig()
+	if err != nil {
+		return err
+	}
+
+	jobService := controller.JobService()
+
+	jobs := make([]models.Job, len(*configs))
+	for index, config := range(*configs) {
+		jobs[index] = *models.NewJob(models.JobId(config.Name), config)
+	}
+
+
+	err = controller.Scheduler().RegisterJobs(jobs)
 
 	if err != nil {
 		return err
@@ -36,6 +50,17 @@ func StartUpSupervisor() error {
 			}
 		}
 	}
+
+
+	var stopErrors []error
+	for _, j := range jobs {
+		if j.Config.AutoStart {
+			if err := jobService.StopJob(ctx, j.Id); err != nil {
+				stopErrors = append(stopErrors, err)
+			}
+		}
+	}
+
 
 	if len(startErrors) > 0 {
 		return services.ConcatenateErrors(startErrors)
