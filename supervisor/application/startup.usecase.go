@@ -1,18 +1,19 @@
 package application
 
 import (
-	"context"
 	"os"
+
 
 	config_parser "github.com/touline-p/task-master/config_parser/domain"
 
+
 	"github.com/touline-p/task-master/supervisor"
 	"github.com/touline-p/task-master/supervisor/application/services"
+	"github.com/touline-p/task-master/supervisor/domain/cqrs"
 	"github.com/touline-p/task-master/supervisor/domain/models"
 )
 
 func StartUpSupervisor() error {
-	ctx := context.Background()
 	controller := supervisor.GetSupervisorController()
 
 
@@ -28,6 +29,7 @@ func StartUpSupervisor() error {
 		jobs[index] = *models.NewJob(models.JobId(config.Name), config)
 	}
 
+
 	err = controller.Scheduler().RegisterJobs(jobs)
 
 	if err != nil {
@@ -42,11 +44,13 @@ func StartUpSupervisor() error {
 	var startErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StartJob(ctx, j.Id); err != nil {
+			startCmd := &cqrs.StartJobCommand{JobId: j.Id}
+			if err := controller.CommandHandler().HandleStartJob(startCmd); err != nil {
 				startErrors = append(startErrors, err)
 			}
 		}
 	}
+
 
 	var stopErrors []error
 	for _, j := range jobs {
@@ -57,12 +61,9 @@ func StartUpSupervisor() error {
 		}
 	}
 
+
 	if len(startErrors) > 0 {
 		return services.ConcatenateErrors(startErrors)
-	}
-
-	if len(stopErrors) > 0 {
-		return services.ConcatenateErrors(stopErrors)
 	}
 
 	return nil
