@@ -55,7 +55,7 @@ func StartUpSupervisor() error {
 	var stopErrors []error
 	for _, j := range jobs {
 		if j.Config.AutoStart {
-			if err := jobService.StopJob(ctx, j.Id); err != nil {
+			if err := jobService.StopJob(j.Id); err != nil {
 				stopErrors = append(stopErrors, err)
 			}
 		}

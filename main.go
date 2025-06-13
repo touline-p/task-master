@@ -7,7 +7,7 @@ import (
 
 func main() {
 	if err := application.StartUpSupervisor(); err != nil {
-		panic(err)
+		println(err)
 	}
 	for {
 		cli_services.InterpreteOneUserCommand()
