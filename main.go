@@ -9,5 +9,7 @@ func main() {
 	if err := application.StartUpSupervisor(); err != nil {
 		panic(err)
 	}
-	cli_services.InterpreteOneUserCommand()
+	for {
+		cli_services.InterpreteOneUserCommand()
+	}
 }
