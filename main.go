@@ -12,4 +12,7 @@ func main() {
 	for {
 		cli_services.InterpreteOneUserCommand()
 	}
+	if err := application.ShutdownSupervisor(); err != nil {
+		panic(err)
+	}
 }
