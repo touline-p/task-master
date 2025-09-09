@@ -54,7 +54,7 @@ func GetSupervisorController() *Controller {
 		jch.SetSchedulerService(scheduler)
 	}
 
-	watcher := infrastructure.NewProcessWatcher(processManager, jobService)
+	// watcher := infrastructure.NewProcessWatcher(processManager, jobService)
 
 	return &Controller{
 		repository:     repository,

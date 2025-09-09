@@ -35,20 +35,11 @@ func (ss *SchedulerService) RegisterJobs(jobs []models.Job) error {
 }
 
 func (ss *SchedulerService) Shutdown() error {
-	runningJobs, err := ss.repository.FindByStatus(models.StatusRunning)
+	err := ss.jobService.StopAllJobs()
 	if err != nil {
 		return err
 	}
-
-	errors := make([]error, 0)
-	for _, job := range runningJobs {
-		err := ss.jobService.StopJob(job.Id)
-		if err != nil {
-			errors = append(errors, err)
-		}
-	}
-
-	return ConcatenateErrors(errors)
+	return nil
 }
 
 func (ss *SchedulerService) TerminateJob(jobId models.JobId) error {
