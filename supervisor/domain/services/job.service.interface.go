@@ -9,5 +9,6 @@ import (
 type IJobService interface {
 	StartJob(ctx context.Context, jobId models.JobId) error
 	StopJob(jobId models.JobId) error
+	StopAllJobs() error
 	HandleProcessEvent(event models.ProcessEvent) error
 }

@@ -42,6 +42,21 @@ func (s *JobService) StartJob(ctx context.Context, jobId models.JobId) error {
 	})
 }
 
+func (s *JobService) StopAllJobs() error {
+	jobs, err := s.repository.FindAll()
+	if err != nil {
+		return fmt.Errorf("failed to find jobs: %w", err)
+	}
+
+	for _, job := range jobs {
+		if err := s.StopJob(job.Id); err != nil {
+			return fmt.Errorf("failed to stop job %s: %w", job.Id, err)
+		}
+	}
+
+	return nil
+}
+
 func (s *JobService) StopJob(jobId models.JobId) error {
 	job, err := s.repository.FindById(jobId)
 	if err != nil {

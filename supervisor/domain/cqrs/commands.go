@@ -59,4 +59,5 @@ type ICommandHandler interface {
 	HandleStopJob(command *StopJobCommand) error
 	HandleRestartJob(command *RestartJobCommand) error
 	HandleProcessEvent(command *ProcessEventCommand) error
+	HandleStopSupervisor(command *StopSupervisorCommand) error
 }

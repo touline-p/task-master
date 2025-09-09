@@ -11,13 +11,15 @@ type SchedulerService struct {
 	repository     repositories.IJobRepository
 	commandHandler cqrs.ICommandHandler
 	queryHandler   cqrs.IQueryHandler
+	jobService     services.IJobService
 }
 
-func NewSchedulerService(repository repositories.IJobRepository, commandHandler cqrs.ICommandHandler, queryHandler cqrs.IQueryHandler) services.ISchedulerService {
+func NewSchedulerService(repository repositories.IJobRepository, commandHandler cqrs.ICommandHandler, queryHandler cqrs.IQueryHandler, jobService services.IJobService) services.ISchedulerService {
 	return &SchedulerService{
 		repository:     repository,
 		commandHandler: commandHandler,
 		queryHandler:   queryHandler,
+		jobService:     jobService,
 	}
 }
 
@@ -30,4 +32,16 @@ func (ss *SchedulerService) RegisterJobs(jobs []models.Job) error {
 		}
 	}
 	return ConcatenateErrors(errors)
+}
+
+func (ss *SchedulerService) Shutdown() error {
+	err := ss.jobService.StopAllJobs()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ss *SchedulerService) TerminateJob(jobId models.JobId) error {
+	return ss.jobService.StopJob(jobId)
 }

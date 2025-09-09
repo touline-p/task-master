@@ -48,7 +48,13 @@ func GetSupervisorController() *Controller {
 	processManager := infrastructure.NewOSProcessManager()
 	jobService := services.NewJobService(processManager, repository)
 	commandHandler := appCqrs.NewJobCommandHandler(jobService)
-	scheduler := services.NewSchedulerService(repository, commandHandler, queryHandler)
+	scheduler := services.NewSchedulerService(repository, commandHandler, queryHandler, jobService)
+
+	if jch, ok := commandHandler.(*appCqrs.JobCommandHandler); ok {
+		jch.SetSchedulerService(scheduler)
+	}
+
+	// watcher := infrastructure.NewProcessWatcher(processManager, jobService)
 
 	return &Controller{
 		repository:     repository,

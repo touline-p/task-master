@@ -6,13 +6,13 @@ import (
 
 // Internal job scheduling and lifecycle
 type ISchedulerService interface {
-	// Shutdown() error
+	Shutdown() error
 
 	RegisterJobs(jobs []models.Job) error
 	// UnregisterJobs(jobIds []models.JobId) error
 	// UpdateJobs(jobs []models.Job) error
 
-	// TerminateJob(jobId models.JobId) error
+	TerminateJob(jobId models.JobId) error
 
 	// HandleProcessEvent(event models.ProcessEvent) error
 }
