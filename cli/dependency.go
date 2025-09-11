@@ -32,7 +32,7 @@ func GetControlerCli() interfaces.IControler {
 	qryHdlr := controler.QueryHandler()
 	cmdHdlr := controler.CommandHandler()
 	return &Controler{
-		iomanager: &linereaders.CliManager{},
+		iomanager: &linereaders.AutoCompleteManager{},
 		parser:    &parser.SimpleParser{},
 		sanitizer: &sanitizer.SimpleSanitizer{
 			SupervisorAdapter: infrastructure.NewSupervisorAdapter(
