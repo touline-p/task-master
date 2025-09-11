@@ -18,6 +18,8 @@ type GetJobByIdQuery struct {
 	JobId models.JobId
 }
 
+type GetJobsIdList struct{}
+
 func (q *GetJobByIdQuery) Type() string {
 	return "GET_JOB_BY_ID"
 }
@@ -39,6 +41,7 @@ func (q *CheckJobHealthQuery) Type() string {
 type IQueryHandler interface {
 	HandleGetJobStatuses(query *GetJobStatusesQuery) (map[models.JobId]models.JobState, error)
 	HandleGetJobById(query *GetJobByIdQuery) (models.Job, error)
+	HandleGetJobsIdList(query *GetJobsIdList) ([]models.JobId, error)
 	HandleGetJobsByStatus(query *GetJobsByStatusQuery) ([]models.Job, error)
 	HandleCheckJobHealth(query *CheckJobHealthQuery) (map[models.JobId]bool, error)
 }

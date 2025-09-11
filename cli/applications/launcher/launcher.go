@@ -17,28 +17,23 @@ func (sl *SimpleLauncher) SvTranslator() interfaces.ISupervisorTranslator {
 }
 func (sl *SimpleLauncher) SvAdapter() interfaces.ISupervisorAdapter { return sl.SupervisorAdapter }
 
-func (l *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand, bldr interfaces.IResponseBuilder) interfaces.IResponseBuilder {
-	translator := l.SvTranslator()
-	adapter := l.SvAdapter()
-
-	stringifiedJobs := []string{}
-	for _, jobId := range translator.JobToString(cmd.JobIds()) {
-		stringifiedJobs = append(stringifiedJobs, jobId)
-	}
-
-	translated_job := translator.Translate(stringifiedJobs)
+func (sl *SimpleLauncher) Run(cmd interfaces.ISanitizedCommand, bldr interfaces.IResponseBuilder) interfaces.IResponseBuilder {
+	translator := sl.SvTranslator()
+	adapter := sl.SvAdapter()
+	stringifiedJobs := append([]string{}, translator.JobToString(cmd.JobIds())...)
+	translatedJobs := translator.Translate(stringifiedJobs)
 
 	var err error
 	switch cmd.Code() {
 	case sanitizer.CmdStart:
-		err = adapter.StartJobs(translated_job)
+		err = adapter.StartJobs(translatedJobs)
 	case sanitizer.CmdStop:
-		err = adapter.StopJobs(translated_job)
+		err = adapter.StopJobs(translatedJobs)
 	case sanitizer.CmdRestart:
-		err = adapter.RestartJobs(translated_job)
+		err = adapter.RestartJobs(translatedJobs)
 	case sanitizer.CmdStatus:
 		var query map[string]interfaces.JobStatus
-		query, err = adapter.GetJobStatuses(translated_job)
+		query, err = adapter.GetJobStatuses(translatedJobs)
 		for key, value := range query {
 			bldr.Info(key + statusToString(value))
 		}

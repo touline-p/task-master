@@ -55,38 +55,38 @@ func (s *SimpleSanitizer) Run(parsedComand interfaces.IParsedCommand, bldr inter
 		return nil, bldr
 	}
 	filteredJobStatus, bldr := filterUnknownJobs(parsedComand.JobNames(), statuses, bldr)
-	validated_jobs, bldr := validatePossibleJobs(command, filteredJobStatus, bldr)
+	validatedJobs, bldr := validatePossibleJobs(command, filteredJobStatus, bldr)
 
 	return &SanitizedCommand{
 		command: command,
-		jobs:    validated_jobs,
+		jobs:    validatedJobs,
 	}, bldr
 }
 
-func filterUnknownJobs(jobNames []string, statuses map[string]interfaces.JobStatus, resp_builder interfaces.IResponseBuilder) (map[string]interfaces.JobStatus, interfaces.IResponseBuilder) {
-	filtered_statuses := make(map[string]interfaces.JobStatus)
+func filterUnknownJobs(jobNames []string, statuses map[string]interfaces.JobStatus, respBuilder interfaces.IResponseBuilder) (map[string]interfaces.JobStatus, interfaces.IResponseBuilder) {
+	filteredStatuses := make(map[string]interfaces.JobStatus)
 	for _, n := range jobNames {
 		status, exist := statuses[n]
-		if exist == true {
-			filtered_statuses[n] = status
+		if exist {
+			filteredStatuses[n] = status
 		} else {
-			resp_builder.Warning(n + ": " + error_msg.UNKNOWN_JOB)
+			respBuilder.Warning(n + ": " + error_msg.UNKNOWN_JOB)
 		}
 	}
-	return filtered_statuses, resp_builder
+	return filteredStatuses, respBuilder
 }
 
-func validatePossibleJobs(command domain.CommandCode, statuses map[string]interfaces.JobStatus, resp_builder interfaces.IResponseBuilder) ([]interfaces.IJob, interfaces.IResponseBuilder) {
-	id_array := []interfaces.IJob{}
-	possible_statuses := possibleStatuses(command)
+func validatePossibleJobs(command domain.CommandCode, statuses map[string]interfaces.JobStatus, respBuilder interfaces.IResponseBuilder) ([]interfaces.IJob, interfaces.IResponseBuilder) {
+	idArray := []interfaces.IJob{}
+	possibleStatuses := possibleStatuses(command)
 	for id, status := range statuses {
-		if slices.Contains(possible_statuses, status) {
-			id_array = append(id_array, &Job{id: id})
+		if slices.Contains(possibleStatuses, status) {
+			idArray = append(idArray, &Job{id: id})
 		} else {
-			resp_builder.Warning(fmt.Sprintf("%s is %s. It can't be %s.", id, status, command))
+			respBuilder.Warning(fmt.Sprintf("%s is %s. %s can't be done.", id, StatusSymbols[status], CommandSymbols[command]))
 		}
 	}
-	return id_array, resp_builder
+	return idArray, respBuilder
 }
 
 const (
@@ -102,6 +102,17 @@ const (
 	CmdNumber
 )
 
+var StatusSymbols = [StatusNumber]string{
+	"",
+	"stoped",
+	"starting",
+	"stoping",
+	"in backoff state",
+	"running",
+	"exited",
+	"in fatal state",
+}
+
 const (
 	_ interfaces.JobStatus = iota
 	Stoped
@@ -111,6 +122,7 @@ const (
 	Running
 	Exited
 	Fatal
+	StatusNumber
 )
 
 var CommandSymbols = [CmdNumber]string{

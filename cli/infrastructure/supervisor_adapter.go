@@ -55,6 +55,19 @@ func (a *SupervisorAdapter) StartJobs(jobIds []string) error {
 	return nil
 }
 
+func (a *SupervisorAdapter) GetJobIds() []string {
+	query := &cqrs.GetJobsIdList{}
+	jobIds, err := a.queryHandler.HandleGetJobsIdList(query)
+	if err == nil {
+		return []string{}
+	}
+	stringifiedJobIds := make([]string, len(jobIds))
+	for i, j := range jobIds {
+		stringifiedJobIds[i] = string(j)
+	}
+	return stringifiedJobIds
+}
+
 func (a *SupervisorAdapter) StopJobs(jobIds []string) error {
 	for _, jobId := range jobIds {
 		a.StopJob(jobId)

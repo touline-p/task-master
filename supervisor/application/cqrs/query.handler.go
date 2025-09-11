@@ -30,6 +30,21 @@ func (h *JobQueryHandler) HandleGetJobStatuses(q *cqrs.GetJobStatusesQuery) (map
 	return statuses, nil
 }
 
+func (h *JobQueryHandler) HandleGetJobsIdList(q *cqrs.GetJobsIdList) ([]models.JobId, error) {
+	jobs, err := h.repository.FindAll()
+
+	if err != nil {
+		return nil, err
+	}
+	jobIds := make([]models.JobId, len(jobs))
+
+	for i, j := range jobs {
+		jobIds[i] = j.Id
+	}
+
+	return jobIds, nil
+}
+
 func (h *JobQueryHandler) HandleGetJobById(q *cqrs.GetJobByIdQuery) (models.Job, error) {
 	return h.repository.FindById(q.JobId)
 }

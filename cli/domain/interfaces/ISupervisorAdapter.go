@@ -21,6 +21,7 @@ type ISupervisorAdapter interface {
 	RestartJob(jobId string) error
 	RestartJobs(jobIds []string) error
 	GetJobStatuses(jobIds []string) (map[string]JobStatus, error)
+	GetJobIds() []string
 }
 
 type ISupervisorTranslator interface {
